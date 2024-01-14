@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <time.h>
 
 #define TAMANHO_INICIAL_LINHAS 10
 
@@ -48,27 +50,39 @@ void inserirNaArvore(ArvorePalavras *arvore, char *palavra, int linha) {
 }
 
 // Buscar palavra na árvore
-void buscarNaArvoreAux(NoArvore *no, const char *palavra) {
-    if (no == NULL) {
-        printf("A palavra '%s' não foi encontrada.\n", palavra);
-        return;
-    }
+void buscarNaArvore(ArvorePalavras *arvore, const char *palavra) {
+    clock_t inicio, fim;
+    double tempoUsado;
 
-    if (strcmp(palavra, no->palavra) < 0) {
-        buscarNaArvoreAux(no->esquerda, palavra);
-    } else if (strcmp(palavra, no->palavra) > 0) {
-        buscarNaArvoreAux(no->direita, palavra);
-    } else {
-        printf("A palavra '%s' ocorre %d vezes nas linhas: ", palavra, no->contagem);
-        for (int i = 0; i < no->contagem; i++) {
-            printf("%d ", no->linhas[i]);
-        }
-        printf("\n");
+    inicio = clock();
+
+    if (!buscarNaArvoreAux(arvore->raiz, palavra, &inicio)) {
+        fim = clock();
+        tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
+        printf("Palavra '%s' nao encontrada.\nTempo de busca: %.2f ms\n", palavra, tempoUsado);
     }
 }
 
-void buscarNaArvore(ArvorePalavras *arvore, const char *palavra) {
-    buscarNaArvoreAux(arvore->raiz, palavra);
+bool buscarNaArvoreAux(NoArvore *no, const char *palavra, clock_t *inicio) {
+    if (no == NULL) {
+        return false;
+    }
+
+    if (strcmp(palavra, no->palavra) < 0) {
+        return buscarNaArvoreAux(no->esquerda, palavra, inicio);
+    } else if (strcmp(palavra, no->palavra) > 0) {
+        return buscarNaArvoreAux(no->direita, palavra, inicio);
+    } else {
+        clock_t fim = clock();
+        double tempoUsado = ((double)(fim - *inicio)) / CLOCKS_PER_SEC * 1000;
+
+        printf("Existem %d ocorrencias da palavra '%s' na(s) seguinte(s) linha(s):\n", no->contagem, palavra);
+        for (int i = 0; i < no->contagem; i++) {
+            printf("%05d\n", no->linhas[i]);
+        }
+        printf("Tempo de busca: %.2f ms\n", tempoUsado);
+        return true;
+    }
 }
 
 // Função auxiliar para liberar a memória de um nó

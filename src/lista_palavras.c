@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define TAMANHO 1000
 #define TAMANHO_INICIAL_LINHAS 10
@@ -62,19 +63,28 @@ void inserirPalavra(ListaPalavras *lista, char *palavra, int linha)
 }
 
 void buscarPalavra(ListaPalavras *lista, const char *palavra) {
+    clock_t inicio, fim;
+    double tempoUsado;
     NoPalavra *atual = lista->cabeca;
+
+    inicio = clock();
 
     while (atual != NULL) {
         if (strcmp(atual->palavra, palavra) == 0) {
-            printf("A palavra '%s' ocorre %d vezes nas linhas: ", palavra, atual->contagem);
+            printf("Existem %d ocorrencias da palavra '%s' na(s) seguinte(s) linha(s):\n", atual->contagem, palavra);
             for (int i = 0; i < atual->contagem; i++) {
-                printf("%d ", atual->linhas[i]);
+                printf("%05d\n", atual->linhas[i]);
             }
-            printf("\n");
+            fim = clock();
+            tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
+            printf("Tempo de busca: %.2f ms\n", tempoUsado);
             return;
         }
         atual = atual->proximo;
     }
 
-    printf("A palavra '%s' nao foi encontrada.\n", palavra);
+    fim = clock();
+    tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
+    printf("Palavra '%s' nao foi encontrada.\nTempo de busca: %.2f ms\n", palavra, tempoUsado);
 }
+
