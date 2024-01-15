@@ -8,6 +8,7 @@
 typedef struct NoArvore {
     char *palavra;
     int *linhas;
+    char **textos; 
     int contagem;
     int tamanho;
     struct NoArvore *esquerda, *direita;
@@ -18,9 +19,11 @@ typedef struct {
 } ArvorePalavras;
 
 ArvorePalavras *criarArvorePalavras();
-void inserirNaArvore(ArvorePalavras *arvore, char *palavra, int linha);
+void inserirNaArvoreAux(NoArvore **no, char *palavra, int linha, char *textoLinha);
+void inserirNaArvore(ArvorePalavras *arvore, char *palavra, int linha, char *textoLinha);
 void buscarNaArvore(ArvorePalavras *arvore, const char *palavra);
 bool buscarNaArvoreAux(NoArvore *no, const char *palavra, clock_t inicio);
 void liberarArvore(ArvorePalavras *arvore);
 
 #endif
+ 

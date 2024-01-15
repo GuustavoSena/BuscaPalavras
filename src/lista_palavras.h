@@ -6,6 +6,7 @@ typedef struct NoPalavra
 {
     char *palavra;
     int *linhas;  // Array dinâmico para armazenar as linhas
+    char **textos; // Array de strings para armazenar os textos das linhas
     int contagem; // Contagem do número de vezes que a palavra aparece
     int tamanho;  // Tamanho atual do array 'linhas'
     struct NoPalavra *proximo;
@@ -16,7 +17,7 @@ typedef struct {
 } ListaPalavras;
 
 ListaPalavras *criarListaPalavras();
-void inserirPalavra(ListaPalavras *lista, char *palavra, int linha);
+void inserirPalavra(ListaPalavras *lista, char *palavra, int linha, char *textoLinha);
 void buscarPalavra(ListaPalavras *lista, const char *palavra);
 
 #endif

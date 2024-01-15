@@ -14,7 +14,7 @@ ListaPalavras *criarListaPalavras()
     return lista;
 }
 
-void inserirPalavra(ListaPalavras *lista, char *palavra, int linha)
+void inserirPalavra(ListaPalavras *lista, char *palavra, int linha, char *textoLinha)
 {
     NoPalavra *atual = lista->cabeca;
     NoPalavra *anterior = NULL;
@@ -32,7 +32,9 @@ void inserirPalavra(ListaPalavras *lista, char *palavra, int linha)
         NoPalavra *novo = (NoPalavra *)malloc(sizeof(NoPalavra));
         novo->palavra = strdup(palavra);
         novo->linhas = (int *)malloc(TAMANHO_INICIAL_LINHAS * sizeof(int));
+        novo->textos = (char **)malloc(TAMANHO_INICIAL_LINHAS * sizeof(char *));
         novo->linhas[0] = linha;
+        novo->textos[0] = strdup(textoLinha);
         novo->contagem = 1;
         novo->tamanho = TAMANHO_INICIAL_LINHAS;
         novo->proximo = NULL;
@@ -53,27 +55,33 @@ void inserirPalavra(ListaPalavras *lista, char *palavra, int linha)
         // Palavra encontrada, atualiza as informações
         if (atual->contagem >= atual->tamanho)
         {
-            // Redimensiona o array de linhas se necessário
+            // Redimensiona o array de linhas e textos se necessário
             atual->tamanho *= 2;
             atual->linhas = (int *)realloc(atual->linhas, atual->tamanho * sizeof(int));
+            atual->textos = (char **)realloc(atual->textos, atual->tamanho * sizeof(char *));
         }
         atual->linhas[atual->contagem] = linha;
+        atual->textos[atual->contagem] = strdup(textoLinha);
         atual->contagem++;
     }
 }
 
-void buscarPalavra(ListaPalavras *lista, const char *palavra) {
+void buscarPalavra(ListaPalavras *lista, const char *palavra)
+{
     clock_t inicio, fim;
     double tempoUsado;
     NoPalavra *atual = lista->cabeca;
 
     inicio = clock();
 
-    while (atual != NULL) {
-        if (strcmp(atual->palavra, palavra) == 0) {
+    while (atual != NULL)
+    {
+        if (strcmp(atual->palavra, palavra) == 0)
+        {
             printf("Existem %d ocorrencias da palavra '%s' na(s) seguinte(s) linha(s):\n", atual->contagem, palavra);
-            for (int i = 0; i < atual->contagem; i++) {
-                printf("%05d\n", atual->linhas[i]);
+            for (int i = 0; i < atual->contagem; i++)
+            {
+                printf("%05d: %s", atual->linhas[i], atual->textos[i]);
             }
             fim = clock();
             tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
@@ -87,4 +95,3 @@ void buscarPalavra(ListaPalavras *lista, const char *palavra) {
     tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
     printf("Palavra '%s' nao foi encontrada.\nTempo de busca: %.2f ms\n", palavra, tempoUsado);
 }
-

@@ -9,9 +9,9 @@
 #define TAMANHO 1000
 
 // Funções de processamento para lista
-void processarLinha(char *linha, int numeroLinha, ListaPalavras *lista)
+void processarLinha(char *linhaOriginal, int numeroLinha, ListaPalavras *lista)
 {
-    // Esta função processará cada linha do arquivo
+    char *linha = strdup(linhaOriginal); // Faz uma cópia da linha para manipulação
 
     // Remove quebras de linha e pontuações
     for (int i = 0; linha[i]; i++)
@@ -29,10 +29,12 @@ void processarLinha(char *linha, int numeroLinha, ListaPalavras *lista)
     {
         if (strlen(palavra) > 0)
         {
-            inserirPalavra(lista, palavra, numeroLinha + 1);
+            inserirPalavra(lista, palavra, numeroLinha + 1, linhaOriginal);
         }
         palavra = strtok(NULL, " ");
     }
+
+    free(linha); // Libera a cópia da linha
 }
 
 void processarArquivo(const char *nomeArquivo, ListaPalavras *lista)
@@ -55,11 +57,13 @@ void processarArquivo(const char *nomeArquivo, ListaPalavras *lista)
     }
 
     fclose(arquivo);
+    printf("Numero de linhas no arquivo: %d\n", contadorLinha);
 }
 
-// Funções de processamento para árvore (implementações devem ser adaptadas para a árvore)
-void processarLinhaArvore(char *linha, int numeroLinha, ArvorePalavras *arvore)
+void processarLinhaArvore(char *linhaOriginal, int numeroLinha, ArvorePalavras *arvore)
 {
+    char *linha = strdup(linhaOriginal); // Faz uma cópia da linha para manipulação
+    // Remove quebras de linha e pontuações
     for (int i = 0; linha[i]; i++)
     {
         linha[i] = tolower(linha[i]);
@@ -69,17 +73,21 @@ void processarLinhaArvore(char *linha, int numeroLinha, ArvorePalavras *arvore)
         }
     }
 
+    // Extrai e insere palavras na árvore
     char *palavra = strtok(linha, " ");
     while (palavra != NULL)
     {
         if (strlen(palavra) > 0)
         {
-            inserirNaArvore(arvore, palavra, numeroLinha + 1);
+            inserirNaArvore(arvore, palavra, numeroLinha + 1, linhaOriginal);
         }
         palavra = strtok(NULL, " ");
     }
+
+    free(linha); // Libera a cópia da linha
 }
 
+// Funções de processamento para árvore (implementações devem ser adaptadas para a árvore)
 void processarArquivoArvore(const char *nomeArquivo, ArvorePalavras *arvore)
 {
     FILE *arquivo = fopen(nomeArquivo, "r");
@@ -100,6 +108,7 @@ void processarArquivoArvore(const char *nomeArquivo, ArvorePalavras *arvore)
     }
 
     fclose(arquivo);
+    printf("Numero de linhas no arquivo: %d\n", contadorLinha);
 }
 
 // Funções para liberar a lista e a árvore
@@ -144,6 +153,9 @@ int main(int argc, char **argv)
     double tempoUsado;
     char palavraBusca[TAMANHO];
 
+    printf("Tipo de indice: '%s'\n", tipoEstrutura);
+    printf("Arquivo texto: '%s'\n", nomeArquivo);
+
     inicio = clock();
 
     if (strcmp(tipoEstrutura, "lista") == 0)
@@ -153,19 +165,26 @@ int main(int argc, char **argv)
 
         fim = clock();
         tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-        printf("Tempo para carregar e construir indice (lista): %.2f segundos\n", tempoUsado);
+        printf("Tempo para carregar e construir indice: %.2f segundos\n", tempoUsado);
 
         while (1)
         {
-            printf("Digite a palavra a ser buscada (ou 'sair' para encerrar): ");
+            printf("> ");
             scanf("%999s", palavraBusca);
 
-            if (strcmp(palavraBusca, "sair") == 0)
+            if (strcmp(palavraBusca, "fim") == 0)
             {
                 break;
             }
-
-            buscarPalavra(lista, palavraBusca);
+            else if (strcmp(palavraBusca, "busca") == 0)
+            {
+                scanf("%999s", palavraBusca);
+                buscarPalavra(lista, palavraBusca);
+            }
+            else
+            {
+                printf("Opcao invalida!\n");
+            }
         }
 
         liberarListaPalavras(lista);
@@ -177,21 +196,27 @@ int main(int argc, char **argv)
 
         fim = clock();
         tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-        printf("Tempo para carregar e construir indice (arvore): %.2f segundos\n", tempoUsado);
+        printf("Tempo para carregar e construir indice: %.2f segundos\n", tempoUsado);
 
         while (1)
         {
-            printf("Digite a palavra a ser buscada (ou 'sair' para encerrar): ");
+            printf("> ");
             scanf("%999s", palavraBusca);
 
-            if (strcmp(palavraBusca, "sair") == 0)
+            if (strcmp(palavraBusca, "fim") == 0)
             {
                 break;
             }
-
-            buscarNaArvore(arvore, palavraBusca);
+            else if (strcmp(palavraBusca, "busca") == 0)
+            {
+                scanf("%999s", palavraBusca);
+                buscarNaArvore(arvore, palavraBusca);
+            }
+            else
+            {
+                printf("Opcao invalida!\n");
+            }
         }
-
         liberarArvore(arvore);
     }
     else
