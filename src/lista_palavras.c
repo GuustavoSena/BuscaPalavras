@@ -77,7 +77,7 @@ void buscarPalavra(ListaPalavras *lista, const char *palavra) {
             }
             fim = clock();
             tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
-            printf("Tempo de busca: %.2f ms\n", tempoUsado);
+            printf("Tempo de busca: %.5f ms\n", tempoUsado);
             return;
         }
         atual = atual->proximo;

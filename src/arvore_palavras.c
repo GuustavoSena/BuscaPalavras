@@ -8,7 +8,8 @@
 #define TAMANHO_INICIAL_LINHAS 10
 
 // Função auxiliar para criar um novo nó da árvore
-static NoArvore *criarNoArvore(char *palavra, int linha) {
+static NoArvore *criarNoArvore(char *palavra, int linha)
+{
     NoArvore *novo = (NoArvore *)malloc(sizeof(NoArvore));
     novo->palavra = strdup(palavra);
     novo->linhas = (int *)malloc(TAMANHO_INICIAL_LINHAS * sizeof(int));
@@ -20,23 +21,33 @@ static NoArvore *criarNoArvore(char *palavra, int linha) {
 }
 
 // Criar a árvore de palavras
-ArvorePalavras *criarArvorePalavras() {
+ArvorePalavras *criarArvorePalavras()
+{
     ArvorePalavras *arvore = (ArvorePalavras *)malloc(sizeof(ArvorePalavras));
     arvore->raiz = NULL;
     return arvore;
 }
 
 // Inserir palavra na árvore
-void inserirNaArvoreAux(NoArvore **no, char *palavra, int linha) {
-    if (*no == NULL) {
+void inserirNaArvoreAux(NoArvore **no, char *palavra, int linha)
+{
+    if (*no == NULL)
+    {
         *no = criarNoArvore(palavra, linha);
-    } else if (strcmp(palavra, (*no)->palavra) < 0) {
+    }
+    else if (strcmp(palavra, (*no)->palavra) < 0)
+    {
         inserirNaArvoreAux(&((*no)->esquerda), palavra, linha);
-    } else if (strcmp(palavra, (*no)->palavra) > 0) {
+    }
+    else if (strcmp(palavra, (*no)->palavra) > 0)
+    {
         inserirNaArvoreAux(&((*no)->direita), palavra, linha);
-    } else {
+    }
+    else
+    {
         // Palavra já existe, atualizar linhas e contagem
-        if ((*no)->contagem == (*no)->tamanho) {
+        if ((*no)->contagem == (*no)->tamanho)
+        {
             (*no)->tamanho *= 2;
             (*no)->linhas = realloc((*no)->linhas, (*no)->tamanho * sizeof(int));
         }
@@ -45,49 +56,62 @@ void inserirNaArvoreAux(NoArvore **no, char *palavra, int linha) {
     }
 }
 
-void inserirNaArvore(ArvorePalavras *arvore, char *palavra, int linha) {
+void inserirNaArvore(ArvorePalavras *arvore, char *palavra, int linha)
+{
     inserirNaArvoreAux(&(arvore->raiz), palavra, linha);
 }
 
 // Buscar palavra na árvore
-void buscarNaArvore(ArvorePalavras *arvore, const char *palavra) {
+void buscarNaArvore(ArvorePalavras *arvore, const char *palavra)
+{
     clock_t inicio, fim;
     double tempoUsado;
 
     inicio = clock();
 
-    if (!buscarNaArvoreAux(arvore->raiz, palavra, &inicio)) {
+    if (!buscarNaArvoreAux(arvore->raiz, palavra, inicio))
+    {
         fim = clock();
         tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
         printf("Palavra '%s' nao encontrada.\nTempo de busca: %.2f ms\n", palavra, tempoUsado);
     }
 }
 
-bool buscarNaArvoreAux(NoArvore *no, const char *palavra, clock_t *inicio) {
-    if (no == NULL) {
+bool buscarNaArvoreAux(NoArvore *no, const char *palavra, clock_t inicio)
+{
+    if (no == NULL)
+    {
         return false;
     }
 
-    if (strcmp(palavra, no->palavra) < 0) {
+    if (strcmp(palavra, no->palavra) < 0)
+    {
         return buscarNaArvoreAux(no->esquerda, palavra, inicio);
-    } else if (strcmp(palavra, no->palavra) > 0) {
+    }
+    else if (strcmp(palavra, no->palavra) > 0)
+    {
         return buscarNaArvoreAux(no->direita, palavra, inicio);
-    } else {
+    }
+    else
+    {
         clock_t fim = clock();
-        double tempoUsado = ((double)(fim - *inicio)) / CLOCKS_PER_SEC * 1000;
+        double tempoUsado = ((double)(fim - inicio)) / CLOCKS_PER_SEC * 1000;
 
         printf("Existem %d ocorrencias da palavra '%s' na(s) seguinte(s) linha(s):\n", no->contagem, palavra);
-        for (int i = 0; i < no->contagem; i++) {
+        for (int i = 0; i < no->contagem; i++)
+        {
             printf("%05d\n", no->linhas[i]);
         }
-        printf("Tempo de busca: %.2f ms\n", tempoUsado);
+        printf("Tempo de busca: %.5f ms\n", tempoUsado);
         return true;
     }
 }
 
 // Função auxiliar para liberar a memória de um nó
-static void liberarNoArvore(NoArvore *no) {
-    if (no == NULL) return;
+static void liberarNoArvore(NoArvore *no)
+{
+    if (no == NULL)
+        return;
     liberarNoArvore(no->esquerda);
     liberarNoArvore(no->direita);
     free(no->palavra);
@@ -96,7 +120,8 @@ static void liberarNoArvore(NoArvore *no) {
 }
 
 // Liberar a árvore de palavras
-void liberarArvore(ArvorePalavras *arvore) {
+void liberarArvore(ArvorePalavras *arvore)
+{
     liberarNoArvore(arvore->raiz);
     free(arvore);
 }
